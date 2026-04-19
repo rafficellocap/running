@@ -416,54 +416,55 @@
 </div><!-- /content -->
 
 <script>
-// Weeks run Mon–Sun. Week 1 starts Mon Apr 21 (first full Mon after Apr 19 kick-off run).
-// Apr 19 Sunday run is treated as belonging to week 1 (Mon Apr 21–Sun Apr 27).
+// Week 1 = Sun Apr 19 only (today's kick-off run). Proper Mon–Sun weeks start week 2.
 const PLAN=[
-  {week:1,label:"Base building",type:"build",dates:"Mon Apr 21 – Sun Apr 27",monDate:"2025-04-19",runs:[
-    {day:"Sun Apr 19",desc:"Long run — first one!",km:10,pace:"6:45–7:15",effort:"Easy",how:"You're off! Run the full 10 km easy and steady. This is your baseline long run — keep breathing comfortable the whole way. No heroics today."},
+  {week:1,label:"Kick-off",type:"build",dates:"Sun Apr 19",monDate:"2025-04-19",runs:[
+    {day:"Sun Apr 19",desc:"Long run — first one!",km:10,pace:"6:45–7:15",effort:"Easy",how:"You're off! Run the full 10 km easy and steady. This is your baseline long run — keep breathing comfortable the whole way. No heroics today."}]},
+  {week:2,label:"Base building",type:"build",dates:"Mon Apr 21 – Sun Apr 27",monDate:"2025-04-21",runs:[
     {day:"Wed Apr 23",desc:"Easy run",km:5,pace:"7:00–7:30",effort:"Easy",how:"Easy midweek run. Relaxed pace, conversational effort. Focus on consistency not speed."},
-    {day:"Sat Apr 26",desc:"Recovery jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Short shakeout before Sunday. Keep it very easy — just spin the legs out."}]},
-  {week:2,label:"Base building",type:"build",dates:"Mon Apr 28 – Sun May 4",monDate:"2025-04-28",runs:[
-    {day:"Sun May 4",desc:"Long run",km:11,pace:"6:45–7:15",effort:"Easy",how:"Step up to 11 km. Keep the effort easy throughout. If you feel good in the last 2 km, hold steady — don't chase pace."},
+    {day:"Sat Apr 26",desc:"Recovery jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Short shakeout before Sunday. Keep it very easy — just spin the legs out."},
+    {day:"Sun Apr 27",desc:"Long run",km:11,pace:"6:45–7:15",effort:"Easy",how:"Step up to 11 km. Keep the effort easy throughout. If you feel good in the last 2 km, hold steady — don't chase pace."}]},
+  {week:3,label:"Base building",type:"build",dates:"Mon Apr 28 – Sun May 4",monDate:"2025-04-28",runs:[
     {day:"Wed Apr 30",desc:"Easy run",km:6,pace:"7:00–7:30",effort:"Easy",how:"Steady easy effort. Building a base. Comfortable the whole time."},
-    {day:"Sat May 3",desc:"Recovery jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Easy legs before Sunday. No effort here at all."}]},
-  {week:3,label:"Building volume",type:"build",dates:"Mon May 5 – Sun May 11",monDate:"2025-05-05",runs:[
-    {day:"Sun May 11",desc:"Long run",km:13,pace:"6:45–7:15",effort:"Easy",how:"13 km — your longest yet. Break it into thirds mentally. First 4 km very easy, middle 5 km steady, last 4 km hold on comfortably."},
+    {day:"Sat May 3",desc:"Recovery jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Easy legs before Sunday. No effort here at all."},
+    {day:"Sun May 4",desc:"Long run",km:13,pace:"6:45–7:15",effort:"Easy",how:"13 km — your longest yet. Break it into thirds mentally. First 4 km very easy, middle 5 km steady, last 4 km hold on comfortably."}]},
+  {week:4,label:"Building volume",type:"build",dates:"Mon May 5 – Sun May 11",monDate:"2025-05-05",runs:[
     {day:"Wed May 7",desc:"Tempo intervals 3×8 min",km:7,pace:"6:00–6:15 (intervals)",effort:"Hard",how:"Warm up 10 min easy. Run 3 reps of 8 minutes at tempo pace (6:00–6:15/km) with 3 min easy jog between each. Cool down 10 min easy. First tempo session — stay controlled."},
-    {day:"Sat May 10",desc:"Easy recovery",km:5,pace:"7:15–7:45",effort:"Very easy",how:"Easy shakeout after Wednesday's tempo. Keep it slow and relaxed."}]},
-  {week:4,label:"Recovery week",type:"recovery",dates:"Mon May 12 – Sun May 18",monDate:"2025-05-12",runs:[
-    {day:"Sun May 18",desc:"Medium long run",km:9,pace:"6:45–7:15",effort:"Easy",how:"Recovery week — shorter long run. Keep it easy and enjoyable. You should feel fresher than last week."},
-    {day:"Wed May 14",desc:"Easy run",km:5,pace:"7:00–7:30",effort:"Easy",how:"Recovery week — no pressure. Just a relaxed easy run. Let your body absorb the first 3 weeks."},
-    {day:"Sat May 17",desc:"Easy jog",km:4,pace:"7:30–8:00",effort:"Very easy",how:"Very easy. Recovery week. Slow is good."}]},
-  {week:5,label:"Building endurance",type:"build",dates:"Mon May 19 – Sun May 25",monDate:"2025-05-19",runs:[
-    {day:"Sun May 25",desc:"Long run",km:14,pace:"6:45–7:15",effort:"Easy",how:"First time past 13 km. Stay easy for the first 9 km, then hold on comfortably for the last 5. Consider water at the halfway point."},
+    {day:"Sat May 10",desc:"Easy recovery",km:5,pace:"7:15–7:45",effort:"Very easy",how:"Easy shakeout after Wednesday's tempo. Keep it slow and relaxed."},
+    {day:"Sun May 11",desc:"Long run",km:14,pace:"6:45–7:15",effort:"Easy",how:"First time past 13 km. Stay easy for the first 9 km, then hold on comfortably for the last 5. Consider water at the halfway point."}]},
+  {week:5,label:"Recovery week",type:"recovery",dates:"Mon May 12 – Sun May 18",monDate:"2025-05-12",runs:[
+    {day:"Wed May 14",desc:"Easy run",km:5,pace:"7:00–7:30",effort:"Easy",how:"Recovery week — no pressure. Just a relaxed easy run. Let your body absorb the first 4 weeks."},
+    {day:"Sat May 17",desc:"Easy jog",km:4,pace:"7:30–8:00",effort:"Very easy",how:"Very easy. Recovery week. Slow is good."},
+    {day:"Sun May 18",desc:"Medium long run",km:9,pace:"6:45–7:15",effort:"Easy",how:"Recovery week — shorter long run. Keep it easy and enjoyable. You should feel fresher than last week."}]},
+  {week:6,label:"Building endurance",type:"build",dates:"Mon May 19 – Sun May 25",monDate:"2025-05-19",runs:[
     {day:"Wed May 21",desc:"Tempo run",km:8,pace:"6:00–6:15",effort:"Hard",how:"Warm up 10 min. Then 25 min continuous at tempo pace (6:00–6:15/km). Comfortably hard — talking is difficult. Cool down 10 min."},
-    {day:"Sat May 24",desc:"Easy recovery",km:5,pace:"7:15–7:45",effort:"Very easy",how:"Easy legs before Sunday. No effort here."}]},
-  {week:6,label:"Building endurance",type:"build",dates:"Mon May 26 – Sun Jun 1",monDate:"2025-05-26",runs:[
-    {day:"Sun Jun 1",desc:"Long run",km:15,pace:"6:45–7:15",effort:"Easy",how:"15 km — a new distance PB! Fuel beforehand. Take water or a gel around 10 km. Run fully easy the whole way."},
+    {day:"Sat May 24",desc:"Easy recovery",km:5,pace:"7:15–7:45",effort:"Very easy",how:"Easy legs before Sunday. No effort here."},
+    {day:"Sun May 25",desc:"Long run",km:15,pace:"6:45–7:15",effort:"Easy",how:"15 km — a new distance PB! Fuel beforehand. Take water or a gel around 10 km. Run fully easy the whole way."}]},
+  {week:7,label:"Building endurance",type:"build",dates:"Mon May 26 – Sun Jun 1",monDate:"2025-05-26",runs:[
     {day:"Wed May 28",desc:"Intervals 4×1 km",km:8,pace:"5:35–5:45 (reps)",effort:"Very hard",how:"Warm up 15 min easy. Run 4 reps of exactly 1 km at 5:35–5:45/km. Rest 2–2:30 min between each (walk or very slow jog). Cool down 10 min. Hard but controlled — not a full sprint."},
-    {day:"Sat May 31",desc:"Easy recovery",km:6,pace:"7:15–7:45",effort:"Very easy",how:"Easy run. Legs might feel tired from Wednesday's intervals — that's normal. Just spin them out."}]},
-  {week:7,label:"Peak build",type:"build",dates:"Mon Jun 2 – Sun Jun 8",monDate:"2025-06-02",runs:[
-    {day:"Sun Jun 8",desc:"Long run",km:17,pace:"6:45–7:15",effort:"Easy",how:"17 km — serious distance now. Consider a gel at 10 km. Run the first 12 km at 7:15, last 5 km at 6:45–7:00 if you feel strong."},
+    {day:"Sat May 31",desc:"Easy recovery",km:6,pace:"7:15–7:45",effort:"Very easy",how:"Easy run. Legs might feel tired from Wednesday's intervals — that's normal. Just spin them out."},
+    {day:"Sun Jun 1",desc:"Long run",km:16,pace:"6:45–7:15",effort:"Easy",how:"16 km — serious distance now. Consider a gel at 10 km. Run the first 11 km at 7:15, last 5 km at 6:45–7:00 if you feel strong."}]},
+  {week:8,label:"Peak build",type:"build",dates:"Mon Jun 2 – Sun Jun 8",monDate:"2025-06-02",runs:[
     {day:"Wed Jun 4",desc:"Tempo run",km:9,pace:"6:00–6:15",effort:"Hard",how:"Warm up 10 min. Then 35 min at tempo pace. Stay disciplined on pace, don't go faster. This is the longest tempo block so far. Cool down 10 min."},
-    {day:"Sat Jun 7",desc:"Easy recovery",km:6,pace:"7:15–7:45",effort:"Very easy",how:"Keep it very easy. Big long run tomorrow — save your legs."}]},
-  {week:8,label:"Recovery week",type:"recovery",dates:"Mon Jun 9 – Sun Jun 15",monDate:"2025-06-09",runs:[
-    {day:"Sun Jun 15",desc:"Medium long run",km:11,pace:"6:45–7:15",effort:"Easy",how:"Recovery week. 11 km easy. You should feel noticeably fresher than week 7."},
+    {day:"Sat Jun 7",desc:"Easy recovery",km:6,pace:"7:15–7:45",effort:"Very easy",how:"Keep it very easy. Big long run tomorrow — save your legs."},
+    {day:"Sun Jun 8",desc:"Long run",km:17,pace:"6:45–7:15",effort:"Easy",how:"17 km — your longest yet. Consider a gel at 10 km. Walk through any aid stations you practice on this run."}]},
+  {week:9,label:"Recovery week",type:"recovery",dates:"Mon Jun 9 – Sun Jun 15",monDate:"2025-06-09",runs:[
     {day:"Wed Jun 11",desc:"Easy run",km:6,pace:"7:00–7:30",effort:"Easy",how:"Recovery week. Relax and let the hard weeks sink in. Easy easy easy."},
-    {day:"Sat Jun 14",desc:"Easy jog",km:4,pace:"7:30–8:00",effort:"Very easy",how:"Very easy shakeout. You've done the hard work — trust the process."}]},
-  {week:9,label:"Peak week",type:"build",dates:"Mon Jun 16 – Sun Jun 22",monDate:"2025-06-16",runs:[
-    {day:"Sun Jun 22",desc:"Longest run — 19 km",km:19,pace:"6:45–7:15",effort:"Easy",how:"Your peak long run. Race simulation: eat your race-day breakfast, use your race-day gear. Take a gel at 10 km. Run easy throughout. After this run, the hard work is done."},
+    {day:"Sat Jun 14",desc:"Easy jog",km:4,pace:"7:30–8:00",effort:"Very easy",how:"Very easy shakeout. You've done the hard work — trust the process."},
+    {day:"Sun Jun 15",desc:"Medium long run",km:11,pace:"6:45–7:15",effort:"Easy",how:"Recovery week. 11 km easy. You should feel noticeably fresher than week 8."}]},
+  {week:10,label:"Peak week",type:"build",dates:"Mon Jun 16 – Sun Jun 22",monDate:"2025-06-16",runs:[
     {day:"Wed Jun 18",desc:"Tempo run",km:10,pace:"6:00–6:15",effort:"Hard",how:"Warm up 10 min. 40 min at tempo pace. Your last big quality session. Nail it and you'll carry huge confidence into the taper."},
-    {day:"Sat Jun 21",desc:"Easy shakeout",km:5,pace:"7:15–7:45",effort:"Very easy",how:"Easy legs only. You've earned a cruisy Saturday."}]},
-  {week:10,label:"Start taper",type:"taper",dates:"Mon Jun 23 – Sun Jun 29",monDate:"2025-06-23",runs:[
-    {day:"Sun Jun 29",desc:"Cut-back long run",km:15,pace:"6:45–7:15",effort:"Easy",how:"Last long run before race day. Keep it fully easy. The last 3 km can be at a comfortable race pace (6:00–6:10) to remind your legs what it feels like."},
+    {day:"Sat Jun 21",desc:"Easy shakeout",km:5,pace:"7:15–7:45",effort:"Very easy",how:"Easy legs only. You've earned a cruisy Saturday."},
+    {day:"Sun Jun 22",desc:"Longest run — 19 km",km:19,pace:"6:45–7:15",effort:"Easy",how:"Your peak long run. Race simulation: eat your race-day breakfast, use your race-day gear. Take a gel at 10 km. Run easy throughout. After this run, the hard work is done."}]},
+  {week:11,label:"Start taper",type:"taper",dates:"Mon Jun 23 – Sun Jun 29",monDate:"2025-06-23",runs:[
     {day:"Wed Jun 25",desc:"Easy run",km:7,pace:"7:00–7:30",effort:"Easy",how:"Taper has begun. Run easy and enjoy feeling fresh. Resist the urge to run fast."},
-    {day:"Sat Jun 28",desc:"Easy jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Short and easy. Legs should feel better each day now."}]},
-  {week:11,label:"Final taper",type:"taper",dates:"Mon Jun 30 – Sun Jul 6",monDate:"2025-06-30",runs:[
-    {day:"Sun Jul 6",desc:"Easy run with strides",km:8,pace:"7:00 easy + strides",effort:"Easy + short bursts",how:"Run 7 km easy (7:00/km), then do 4×20-second strides (fast but relaxed, not sprinting) with 60 sec walk between. Wakes up fast-twitch fibres without tiring you out."},
+    {day:"Sat Jun 28",desc:"Easy jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Short and easy. Legs should feel better each day now."},
+    {day:"Sun Jun 29",desc:"Cut-back long run",km:15,pace:"6:45–7:15",effort:"Easy",how:"Last long run before race day. Keep it fully easy. The last 3 km can be at a comfortable race pace (6:00–6:10) to remind your legs what it feels like."}]},
+  {week:12,label:"Final taper",type:"taper",dates:"Mon Jun 30 – Sun Jul 6",monDate:"2025-06-30",runs:[
     {day:"Wed Jul 2",desc:"Short shakeout",km:5,pace:"7:00–7:30",effort:"Very easy",how:"Easy 5 km. Shake out the legs, calm the nerves. End feeling fresh and excited."},
-    {day:"Sat Jul 5",desc:"Very easy jog",km:3,pace:"7:30+",effort:"Rest",how:"Just 3 km easy. Loosen the legs, nothing more. Eat well tonight."}]},
-  {week:12,label:"Race week",type:"race",dates:"Mon Jul 7 – Sat Jul 12",monDate:"2025-07-07",runs:[
+    {day:"Sat Jul 5",desc:"Very easy jog",km:3,pace:"7:30+",effort:"Rest",how:"Just 3 km easy. Loosen the legs, nothing more. Eat well tonight."},
+    {day:"Sun Jul 6",desc:"Easy run with strides",km:8,pace:"7:00 easy + strides",effort:"Easy + short bursts",how:"Run 7 km easy (7:00/km), then do 4×20-second strides (fast but relaxed, not sprinting) with 60 sec walk between. Wakes up fast-twitch fibres without tiring you out."}]},
+  {week:13,label:"Race week",type:"race",dates:"Mon Jul 7 – Sat Jul 12",monDate:"2025-07-07",runs:[
     {day:"Mon Jul 7",desc:"Rest or 2 km walk",km:2,pace:"Walk",effort:"Rest",how:"Full rest or an easy 2 km walk. Eat well, hydrate, stay off your feet."},
     {day:"Wed Jul 9",desc:"Easy strides — 3 km",km:3,pace:"Easy + strides",effort:"Very easy",how:"2 km easy jog + 3×15-second strides. Just to keep the legs awake. Nothing more."},
     {day:"Sat Jul 12",desc:"🏁 Race day — Half marathon!",km:21.1,pace:"5:55–6:10",effort:"Race effort",how:"Start slow — first 5 km should feel almost too easy. Hold back until km 10. From 10–16 km run at goal pace. Last 5 km: give everything. You've earned it. Go get it!"}]},
