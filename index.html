@@ -339,11 +339,28 @@
         <div class="form-group"><div class="form-label">Date</div><input type="date" id="log-date"></div>
         <div class="form-group"><div class="form-label">Distance (km)</div><input type="number" id="log-km" step="0.1" min="0" placeholder="8.0"></div>
       </div>
+      <div class="form-group" style="margin-bottom:11px">
+        <div class="form-label">Duration</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <input type="number" id="log-h" min="0" max="9" placeholder="0" style="text-align:center">
+            <div style="font-size:10px;color:var(--text3);text-align:center">hrs</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <input type="number" id="log-m" min="0" max="59" placeholder="55" style="text-align:center">
+            <div style="font-size:10px;color:var(--text3);text-align:center">min</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <input type="number" id="log-s" min="0" max="59" placeholder="0" style="text-align:center">
+            <div style="font-size:10px;color:var(--text3);text-align:center">sec</div>
+          </div>
+        </div>
+      </div>
       <div class="form-grid">
-        <div class="form-group"><div class="form-label">Duration (min)</div><input type="number" id="log-dur" min="0" placeholder="55"></div>
         <div class="form-group"><div class="form-label">Feeling</div>
           <select id="log-feel"><option value="">Select...</option><option>💪 Strong</option><option>🙂 Good</option><option>😐 OK</option><option>😓 Tough</option><option>❌ Struggled</option></select>
         </div>
+        <div></div>
       </div>
       <div class="form-grid">
         <div class="form-group"><div class="form-label">Link to plan run</div><select id="log-link"><option value="">Not linked</option></select></div>
@@ -520,19 +537,24 @@ function save(){
 function rid(w,r){return 'w'+w+'-r'+r;}
 function getDays(){const race=new Date('2025-07-12');const now=new Date();now.setHours(0,0,0,0);return Math.max(0,Math.round((race-now)/864e5));}
 function getWeeksLeft(){return Math.max(0,Math.ceil(getDays()/7));}
+// Parse YYYY-MM-DD as local midnight — avoids UTC offset bugs (e.g. CH is UTC+2)
+function parseLocal(str){
+  var p=str.split('-');
+  return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+}
 function getCurrentWeek(){
-  const now=new Date();now.setHours(0,0,0,0);
+  var now=new Date();now.setHours(0,0,0,0);
   for(var i=PLAN.length-1;i>=0;i--){
-    if(now>=new Date(PLAN[i].monDate))return i;
+    if(now>=parseLocal(PLAN[i].monDate))return i;
   }
   return 0;
 }
 function weekIdxForDate(dateStr){
-  const d=new Date(dateStr);d.setHours(0,0,0,0);
-  const apr19=new Date('2025-04-19');
+  var d=parseLocal(dateStr);
+  var apr19=parseLocal('2025-04-19');
   if(d<=apr19)return 0;
   for(var i=PLAN.length-1;i>=0;i--){
-    if(d>=new Date(PLAN[i].monDate))return i;
+    if(d>=parseLocal(PLAN[i].monDate))return i;
   }
   return 0;
 }
@@ -613,19 +635,31 @@ function buildLinkOptions(){
   });});
 }
 
+function paceStr(durSec, km){
+  if(!durSec||!km)return '';
+  var ps=durSec/km;
+  var pm=Math.floor(ps/60);var psec=Math.round(ps%60);
+  if(psec===60){pm++;psec=0;}
+  return pm+':'+(psec<10?'0'+psec:psec)+' /km';
+}
+
 function saveRun(){
   const km=parseFloat(document.getElementById('log-km').value);
   const date=document.getElementById('log-date').value;
   if(!km||!date){alert('Please enter a date and distance.');return;}
-  const dur=document.getElementById('log-dur').value;
+  const h=parseInt(document.getElementById('log-h').value)||0;
+  const m=parseInt(document.getElementById('log-m').value)||0;
+  const s=parseInt(document.getElementById('log-s').value)||0;
+  const durSec=h*3600+m*60+s;
   const feel=document.getElementById('log-feel').value;
   const notes=document.getElementById('log-notes').value;
   const link=document.getElementById('log-link').value;
-  runs.unshift({date:date,km:km,dur:dur,feel:feel,notes:notes,link:link,id:Date.now()});
+  const pace=paceStr(durSec,km);
+  runs.unshift({date:date,km:km,durSec:durSec,pace:pace,feel:feel,notes:notes,link:link,id:Date.now()});
   if(link)logged[link]=true;
   shoes.forEach(function(sh){sh.km=Math.round((sh.km+km)*10)/10;});
   save();
-  ['log-km','log-dur','log-notes'].forEach(function(id){document.getElementById(id).value='';});
+  ['log-km','log-h','log-m','log-s','log-notes'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('log-feel').value='';document.getElementById('log-link').value='';
   const cf=document.getElementById('save-confirm');cf.style.display='inline';setTimeout(function(){cf.style.display='none';},2200);
   updateStats();renderHistory();refreshChartIfActive();
@@ -639,15 +673,31 @@ function deleteRun(idx){
   runs.splice(idx,1);save();updateStats();renderHistory();refreshChartIfActive();
 }
 
+function durDisplay(r){
+  // support old durSec and legacy dur (minutes string)
+  var sec=r.durSec||(r.dur?parseFloat(r.dur)*60:0);
+  if(!sec)return '';
+  var h=Math.floor(sec/3600);var m=Math.floor((sec%3600)/60);var s=Math.round(sec%60);
+  if(h>0)return h+'h '+(m<10?'0'+m:m)+'m';
+  return m+'m'+(s>0?' '+(s<10?'0'+s:s)+'s':'');
+}
+
 function renderHistory(){
   const list=document.getElementById('history-list');
   if(!runs.length){list.innerHTML='<div class="empty">No runs logged yet.</div>';return;}
   list.innerHTML='<div class="history-list">'+runs.map(function(r,i){
+    var pace=r.pace||'';
+    var dur=durDisplay(r);
+    var meta=[];
+    if(pace)meta.push('<span style="font-family:\'DM Mono\',monospace;font-weight:500;color:var(--text)">'+pace+'</span>');
+    if(dur)meta.push(dur);
+    if(r.feel)meta.push(r.feel);
+    if(r.notes)meta.push(r.notes);
     return '<div class="hist-item">'+
       '<div class="hist-dot"></div>'+
       '<div class="hist-date">'+r.date+'</div>'+
       '<div class="hist-km">'+r.km+' km</div>'+
-      '<div class="hist-detail">'+(r.feel?r.feel+' ':'')+(r.dur?r.dur+'min ':'')+(r.notes||'')+'</div>'+
+      '<div class="hist-detail">'+meta.join(' · ')+'</div>'+
       '<button class="del-btn" onclick="deleteRun('+i+')">✕</button>'+
     '</div>';
   }).join('')+'</div>';
