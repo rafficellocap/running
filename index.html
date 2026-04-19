@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Perlage Triathlonage</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
     --bg: #f5f3ef;
@@ -242,10 +241,6 @@
   .hist-detail { flex: 1; font-size: 12px; color: var(--text2); }
   .del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 14px; padding: 0 3px; }
   .del-btn:hover { color: var(--red); }
-  /* CHART */
-  .chart-wrap { position: relative; height: 260px; margin-bottom: 14px; }
-  .chart-legend { display: flex; gap: 16px; font-size: 12px; color: var(--text2); }
-  .legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 5px; }
   /* PACE */
   .pace-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 16px; }
   .pace-box { background: var(--surface); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 11px 13px; }
@@ -318,7 +313,6 @@
 <div class="tabs">
   <button class="tab-btn active" onclick="showTab('plan',event)">Training plan</button>
   <button class="tab-btn" onclick="showTab('log',event)">Log a run</button>
-  <button class="tab-btn" onclick="showTab('chart',event)">Weekly chart</button>
   <button class="tab-btn" onclick="showTab('paces',event)">Pace guide</button>
   <button class="tab-btn" onclick="showTab('shoes',event)">Shoes</button>
   <button class="tab-btn" onclick="showTab('race',event)">Race day</button>
@@ -373,16 +367,6 @@
     </div>
     <div style="font-size:14px;font-weight:500;margin-bottom:10px">Run history</div>
     <div id="history-list"><div class="empty">No runs logged yet.</div></div>
-  </div>
-
-  <!-- CHART -->
-  <div id="tab-chart" class="section">
-    <div style="font-size:13px;color:var(--text2);margin-bottom:14px">Planned vs logged km per week</div>
-    <div class="chart-wrap"><canvas id="kmChart"></canvas></div>
-    <div class="chart-legend">
-      <span><span class="legend-dot" style="background:#b5cde8"></span>Planned</span>
-      <span><span class="legend-dot" style="background:var(--green)"></span>Logged</span>
-    </div>
   </div>
 
   <!-- PACES -->
@@ -521,17 +505,30 @@ const CHECKLIST=[
 const BADGE_CLASS={build:"badge-build",recovery:"badge-recovery",taper:"badge-taper",race:"badge-race"};
 const BADGE_LABEL={build:"Build",recovery:"Recovery",taper:"Taper",race:"Race day"};
 
-let logged=JSON.parse(localStorage.getItem('pt_logged')||'{}');
-let runs=JSON.parse(localStorage.getItem('pt_runs')||'[]');
-let shoes=JSON.parse(localStorage.getItem('pt_shoes')||'null')||[{id:'s1',name:'Current shoes',km:310,max:650}];
-let checks=JSON.parse(localStorage.getItem('pt_checks')||'{}');
-let chartInst=null;
+// v2 keys — fresh start, migrates runs from old pt_ key if present
+(function migrateLegacy(){
+  if(!localStorage.getItem('pt2_migrated')){
+    var oldRuns=JSON.parse(localStorage.getItem('pt_runs')||'[]');
+    var oldLogged=JSON.parse(localStorage.getItem('pt_logged')||'{}');
+    var oldChecks=JSON.parse(localStorage.getItem('pt_checks')||'{}');
+    if(oldRuns.length){localStorage.setItem('pt2_runs',JSON.stringify(oldRuns));}
+    if(Object.keys(oldLogged).length){localStorage.setItem('pt2_logged',JSON.stringify(oldLogged));}
+    if(Object.keys(oldChecks).length){localStorage.setItem('pt2_checks',JSON.stringify(oldChecks));}
+    localStorage.setItem('pt2_migrated','1');
+  }
+})();
+
+let logged=JSON.parse(localStorage.getItem('pt2_logged')||'{}');
+let runs=JSON.parse(localStorage.getItem('pt2_runs')||'[]');
+let shoes=JSON.parse(localStorage.getItem('pt2_shoes')||'null')||[{id:'s1',name:'Current shoes',km:310,max:650}];
+let checks=JSON.parse(localStorage.getItem('pt2_checks')||'{}');
+let chartInst=null; // kept for legacy, unused
 
 function save(){
-  localStorage.setItem('pt_logged',JSON.stringify(logged));
-  localStorage.setItem('pt_runs',JSON.stringify(runs));
-  localStorage.setItem('pt_shoes',JSON.stringify(shoes));
-  localStorage.setItem('pt_checks',JSON.stringify(checks));
+  localStorage.setItem('pt2_logged',JSON.stringify(logged));
+  localStorage.setItem('pt2_runs',JSON.stringify(runs));
+  localStorage.setItem('pt2_shoes',JSON.stringify(shoes));
+  localStorage.setItem('pt2_checks',JSON.stringify(checks));
 }
 
 function rid(w,r){return 'w'+w+'-r'+r;}
@@ -660,7 +657,7 @@ function saveRun(){
   ['log-km','log-h','log-m','log-s','log-notes'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('log-feel').value='';document.getElementById('log-link').value='';
   const cf=document.getElementById('save-confirm');cf.style.display='inline';setTimeout(function(){cf.style.display='none';},2200);
-  updateStats();renderHistory();refreshChartIfActive();
+  updateStats();renderHistory();
   if(link){const btn=document.getElementById('btn-'+link);if(btn){btn.classList.add('done');btn.textContent='✓';}}
 }
 
@@ -668,7 +665,7 @@ function deleteRun(idx){
   const r=runs[idx];
   if(r.link){logged[r.link]=false;const btn=document.getElementById('btn-'+r.link);if(btn){btn.classList.remove('done');btn.textContent='';}}
   shoes.forEach(function(sh){sh.km=Math.max(0,Math.round((sh.km-(parseFloat(r.km)||0))*10)/10);});
-  runs.splice(idx,1);save();updateStats();renderHistory();refreshChartIfActive();
+  runs.splice(idx,1);save();updateStats();renderHistory();
 }
 
 function durDisplay(r){
@@ -774,32 +771,6 @@ function updateCheckProgress(){
 }
 function resetChecklist(){if(confirm('Reset all checklist items?')){checks={};save();buildChecklist();}}
 
-function buildChart(){
-  const ctx=document.getElementById('kmChart').getContext('2d');
-  const labels=PLAN.map(function(w){return 'W'+w.week;});
-  const planned=PLAN.map(function(w){return w.runs.reduce((s,r)=>s+r.km,0);});
-  // Bucket every logged run into the week its date falls in
-  const loggedKm=PLAN.map(function(){return 0;});
-  runs.forEach(function(r){
-    if(!r.date||!r.km)return;
-    var wi=weekIdxForDate(r.date);
-    loggedKm[wi]=Math.round((loggedKm[wi]+(parseFloat(r.km)||0))*10)/10;
-  });
-  if(chartInst)chartInst.destroy();
-  chartInst=new Chart(ctx,{type:'bar',data:{labels:labels,datasets:[
-    {label:'Planned',data:planned,backgroundColor:'#b5cde8',borderRadius:4,order:2},
-    {label:'Logged',data:loggedKm,backgroundColor:'#1a7a56',borderRadius:4,order:1}
-  ]},options:{responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.dataset.label+': '+c.parsed.y+' km';}}}},
-    scales:{
-      x:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#a09d99',font:{size:11,family:'DM Mono'}}},
-      y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{color:'#a09d99',font:{size:11,family:'DM Mono'},callback:function(v){return v+' km';}},beginAtZero:true}
-    }}});
-}
-function refreshChartIfActive(){
-  if(document.getElementById('tab-chart').classList.contains('active'))buildChart();
-}
-
 function calcPace(){
   const dist=parseFloat(document.getElementById('pc-dist').value)||0;
   const mins=parseFloat(document.getElementById('pc-min').value)||0;
@@ -817,7 +788,6 @@ function showTab(name,e){
   document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active');});
   document.getElementById('tab-'+name).classList.add('active');
   if(e&&e.target)e.target.classList.add('active');
-  if(name==='chart')setTimeout(buildChart,50);
   if(name==='log')renderHistory();
   if(name==='shoes')renderShoes();
   if(name==='race')buildChecklist();
