@@ -435,7 +435,7 @@
 // Weeks run Mon–Sun. Week 1 starts Mon Apr 21 (first full Mon after Apr 19 kick-off run).
 // Apr 19 Sunday run is treated as belonging to week 1 (Mon Apr 21–Sun Apr 27).
 const PLAN=[
-  {week:1,label:"Base building",type:"build",dates:"Mon Apr 21 – Sun Apr 27",monDate:"2025-04-21",runs:[
+  {week:1,label:"Base building",type:"build",dates:"Mon Apr 21 – Sun Apr 27",monDate:"2025-04-19",runs:[
     {day:"Sun Apr 19",desc:"Long run — first one!",km:10,pace:"6:45–7:15",effort:"Easy",how:"You're off! Run the full 10 km easy and steady. This is your baseline long run — keep breathing comfortable the whole way. No heroics today."},
     {day:"Wed Apr 23",desc:"Easy run",km:5,pace:"7:00–7:30",effort:"Easy",how:"Easy midweek run. Relaxed pace, conversational effort. Focus on consistency not speed."},
     {day:"Sat Apr 26",desc:"Recovery jog",km:4,pace:"7:15–7:45",effort:"Very easy",how:"Short shakeout before Sunday. Keep it very easy — just spin the legs out."}]},
@@ -551,8 +551,6 @@ function getCurrentWeek(){
 }
 function weekIdxForDate(dateStr){
   var d=parseLocal(dateStr);
-  var apr19=parseLocal('2025-04-19');
-  if(d<=apr19)return 0;
   for(var i=PLAN.length-1;i>=0;i--){
     if(d>=parseLocal(PLAN[i].monDate))return i;
   }
@@ -826,7 +824,9 @@ function showTab(name,e){
 }
 
 // Init
-document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
+var _t=new Date();
+var _localDate=_t.getFullYear()+'-'+String(_t.getMonth()+1).padStart(2,'0')+'-'+String(_t.getDate()).padStart(2,'0');
+document.getElementById('log-date').value=_localDate;
 buildWeeks();
 buildLinkOptions();
 updateStats();
